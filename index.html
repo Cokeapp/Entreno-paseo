@@ -55,12 +55,15 @@
   .legend{display:flex;gap:14px;font-size:13px;color:var(--muted);margin:6px 2px 12px}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 
-  .totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
-  .tot{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+  .totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+  .tot{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
   .tot small{display:block;color:var(--muted);font-size:12px;margin-bottom:2px}
-  .tot b{font-size:20px;font-variant-numeric:tabular-nums}
+  .tot b{font-size:20px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tot b.sm{font-size:16px}
+  .unit{font-size:12px;color:var(--muted);margin-left:2px}
+  .g-ok{color:#2F6B3A} .g-warn{color:#A86412} .g-bad{color:#B23B22} .g-off{color:var(--muted)}
 
-  .controls{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:10px;margin-bottom:12px}
+  .controls{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:10px;margin:12px 0}
   button.big{height:64px;border-radius:18px;font-size:18px;font-weight:700;cursor:pointer;border:0}
   .primary{background:var(--ink);color:#fff}
   .primary.pause{background:#fff;color:var(--ink);border:2px solid var(--ink)!important}
@@ -86,6 +89,7 @@
   .mmss{display:flex;align-items:center;gap:4px;color:var(--ink)}
   .blk{border:1px solid var(--line);border-left-width:5px;border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
   .blk.suave{border-left-color:var(--suave)} .blk.moderado{border-left-color:var(--moderado)} .blk.series{border-left-color:var(--rapido)}
+  .blk.rapido{border-left-color:var(--rapido)}
   .blk-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px}
   .blk-grid{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
   .blk-grid .grow{flex:1 1 150px}
@@ -94,6 +98,38 @@
   .small{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;font-size:15px;font-weight:600;cursor:pointer;color:var(--ink)}
   .disabled-ed{opacity:.5;pointer-events:none}
   dl{margin:0;font-size:15px} dt{font-weight:700;margin-top:8px} dd{margin:2px 0 0;color:var(--muted)}
+
+  /* Historial */
+  .hist-sum{font-size:14px;color:var(--muted);margin:0 0 10px}
+  .hist-sum b{color:var(--ink)}
+  .hrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;font:inherit;color:var(--ink)}
+  .hrow .d{font-size:13px;color:var(--muted)}
+  .hrow .k{font-weight:700;font-size:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+  /* Resumen */
+  .sheet{position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:20;
+    padding:calc(env(safe-area-inset-top) + 14px) calc(env(safe-area-inset-right) + 14px)
+            calc(env(safe-area-inset-bottom) + 28px) calc(env(safe-area-inset-left) + 14px)}
+  .sheet[hidden]{display:none}
+  .sheet .inner{max-width:520px;margin:0 auto}
+  .sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+  .sheet-head h2{margin:0;font-size:22px}
+  .sheet-head p{margin:2px 0 0;color:var(--muted);font-size:14px}
+  .x{background:var(--card);border:1.5px solid var(--line);border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;color:var(--ink);flex:0 0 auto}
+  .route{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px;margin:10px 0}
+  #routeSvg svg{display:block;width:100%;height:auto}
+  .route .empty{padding:24px 10px;text-align:center;color:var(--muted);font-size:14px}
+  #map{height:300px;border-radius:12px;display:none}
+  table.pt{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0 12px;background:var(--card);border-radius:14px;overflow:hidden}
+  table.pt th{font-size:12px;color:var(--muted);text-align:left;font-weight:600;padding:9px 10px;border-bottom:1px solid var(--line)}
+  table.pt td{padding:9px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  table.pt tr:last-child td{border-bottom:0}
+  .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .actions .small{text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;min-height:48px}
+  .actions .wide{grid-column:1 / -1}
+  .badge{display:inline-block;font-size:12px;font-weight:700;background:#FBEBD9;color:#7A4A1E;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
 </style>
 </head>
 <body>
@@ -117,6 +153,11 @@
     <div class="tot"><small>Restante</small><b id="remaining">0:00</b></div>
     <div class="tot"><small>Total plan</small><b id="total">0:00</b></div>
   </div>
+  <div class="totals">
+    <div class="tot"><small>Distancia</small><b id="dist">0,00</b><span class="unit">km</span></div>
+    <div class="tot"><small>Ritmo actual</small><b id="curPace">–:–</b><span class="unit">/km</span></div>
+    <div class="tot"><small>GPS</small><b id="gpsStat" class="sm g-off">–</b></div>
+  </div>
 
   <div class="controls">
     <button class="big sec" id="resetBtn">Reiniciar</button>
@@ -128,9 +169,15 @@
     <label class="tg"><input type="checkbox" id="tSound"> Pitidos</label>
     <label class="tg"><input type="checkbox" id="tVoice"> Voz</label>
     <label class="tg"><input type="checkbox" id="tVibe"> Vibración</label>
+    <label class="tg"><input type="checkbox" id="tGps"> GPS</label>
     <button class="linkbtn" id="testBtn">Probar avisos</button>
   </div>
   <p class="tip" id="tip"></p>
+
+  <details id="history">
+    <summary>Historial de caminatas</summary>
+    <div class="dbody" id="historyBody"></div>
+  </details>
 
   <details id="editor">
     <summary>Editar plan</summary>
@@ -151,12 +198,19 @@
       <p class="note" style="margin-top:12px">Avisos: 3 pitidos cortos en los últimos 3 segundos de cada tramo, y al cambiar suena un aviso distinto según el ritmo (subida = rápido, dos iguales = moderado, bajada = suave).</p>
     </div>
   </details>
+  <p class="note" style="text-align:center;margin-top:14px">Versión 2</p>
 </main>
+
+<section class="sheet" id="summarySheet" hidden>
+  <div class="inner" id="summaryInner"></div>
+</section>
 
 <script>
 (function(){
   "use strict";
   var PACE = {suave:"Suave", moderado:"Moderado", rapido:"Rápido"};
+  var PACE_KEYS = ["suave","moderado","rapido"];
+  var COLORS = {suave:"#6F9160", moderado:"#36695B", rapido:"#C14F28"};
   var DEFAULTS = [
     {name:"Intervalos", blocks:[
       {type:"tramo", name:"Calentamiento", pace:"suave", sec:300},
@@ -175,11 +229,16 @@
       {type:"tramo", name:"Vuelta a la calma", pace:"suave", sec:300}
     ]}
   ];
-  var TIP_NOLOCK = "Este navegador no permite mantener la pantalla encendida desde aquí. Alarga el bloqueo automático del móvil mientras caminas: si la pantalla se apaga, el tiempo sigue bien contado pero los avisos no suenan hasta que vuelvas a la app.";
+  var TIP_NOLOCK = "Este navegador no permite mantener la pantalla encendida desde aquí. Alarga el bloqueo automático del móvil mientras caminas: si la pantalla se apaga, el tiempo sigue bien contado pero los avisos no suenan y el GPS deja de registrar hasta que vuelvas a la app.";
+  var TIP_DENIED = "Sin permiso de ubicación no se mide la distancia. Android: mantén pulsado el icono de la app → Información → Permisos → Ubicación. iPhone: Ajustes → Privacidad y seguridad → Localización → Sitios web de Safari → «Al usar la app».";
+  var GPS_MAX_ACC = 35;      // m: descarta lecturas peores
+  var GPS_MIN_STEP = 5;      // m: movimiento mínimo entre puntos
+  var GPS_MAX_SPEED = 4.5;   // m/s: descarta saltos imposibles caminando
 
   var store = {
     get:function(k,d){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
-    set:function(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+    set:function(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } },
+    del:function(k){ try{ localStorage.removeItem(k); }catch(e){} }
   };
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
   function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
@@ -187,13 +246,17 @@
 
   var plans = store.get("caminata.plans.v1", null);
   if(!Array.isArray(plans) || !plans.length) plans = clone(DEFAULTS);
-  var prefs = Object.assign({sound:true, voice:true, vibrate:true}, store.get("caminata.prefs.v1", {}));
+  var prefs = Object.assign({sound:true, voice:true, vibrate:true, gps:true}, store.get("caminata.prefs.v1", {}));
   var planIdx = Math.min(Math.max(0, store.get("caminata.planIdx", 0) | 0), plans.length - 1);
+  var history = store.get("caminata.history.v1", []);
+  if(!Array.isArray(history)) history = [];
   function save(){ store.set("caminata.plans.v1", plans); store.set("caminata.planIdx", planIdx); store.set("caminata.prefs.v1", prefs); }
 
   var steps = [], total = 0;
   var st = newState();
-  function newState(){ return {running:false, startedAt:0, accum:0, lastIdx:-1, lastBeep:"", finished:false}; }
+  function newState(){ return {running:false, startedAt:0, accum:0, lastIdx:-1, lastBeep:"", finished:false, recorded:false, walkStart:0}; }
+  var track = newTrack();
+  function newTrack(){ return {dist:0, pts:[], seg:0}; }
 
   function expand(plan){
     var out = [];
@@ -211,7 +274,11 @@
   }
   function rebuild(){ steps = expand(plans[planIdx]); total = steps.reduce(function(a,s){ return a + s.sec; }, 0); }
 
-  function fmt(sec){ sec = Math.max(0, Math.round(sec)); var m = Math.floor(sec/60), s = sec % 60; return m + ":" + (s < 10 ? "0" : "") + s; }
+  function fmt(sec){ sec = Math.max(0, Math.round(sec)); var h = Math.floor(sec/3600), m = Math.floor(sec/60) % 60, s = sec % 60;
+    if(h) return h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    return Math.floor(sec/60) + ":" + (s < 10 ? "0" : "") + s; }
+  function km(m){ return (m/1000).toFixed(2).replace(".", ","); }
+  function paceStr(secPerKm){ if(!isFinite(secPerKm) || secPerKm <= 0 || secPerKm > 3600) return "–:–"; return fmt(secPerKm); }
   function elapsedMs(){ return st.accum + (st.running ? Date.now() - st.startedAt : 0); }
   function locate(ms){
     var t = ms/1000, cum = 0;
@@ -291,43 +358,143 @@
     if(immediate) say(txt); else setTimeout(function(){ say(txt); }, 650);
   }
 
-  var wl = null;
-  function setTip(t){ $("tip").textContent = t; }
+  var wl = null, tipLock = false, tipGps = false;
+  function updTip(){ $("tip").textContent = (tipGps ? TIP_DENIED : "") + (tipGps && tipLock ? " " : "") + (tipLock ? TIP_NOLOCK : ""); }
   function lockScreen(){
-    if(!("wakeLock" in navigator)){ setTip(TIP_NOLOCK); return; }
+    if(!("wakeLock" in navigator)){ tipLock = true; updTip(); return; }
     if(wl) return;
     try{
       navigator.wakeLock.request("screen").then(function(l){
-        wl = l; setTip("");
+        wl = l; tipLock = false; updTip();
         l.addEventListener("release", function(){ wl = null; });
-      }).catch(function(){ wl = null; setTip(TIP_NOLOCK); });
-    }catch(e){ setTip(TIP_NOLOCK); }
+      }).catch(function(){ wl = null; tipLock = true; updTip(); });
+    }catch(e){ tipLock = true; updTip(); }
   }
   function unlockScreen(){ try{ if(wl) wl.release(); }catch(e){} wl = null; }
+
+  /* ---------- GPS ---------- */
+  var gps = {watch:null, state:"idle", acc:null};
+  function hav(a, b){
+    var R = 6371000, r = Math.PI/180;
+    var dLa = (b[0]-a[0])*r, dLo = (b[1]-a[1])*r;
+    var x = Math.sin(dLa/2)*Math.sin(dLa/2) + Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)*Math.sin(dLo/2);
+    return 2*R*Math.asin(Math.min(1, Math.sqrt(x)));
+  }
+  function setGps(s){ gps.state = s; renderGps(); }
+  function renderGps(){
+    var el = $("gpsStat"), t = "–", c = "g-off";
+    if(!prefs.gps){ t = "Apagado"; }
+    else if(gps.state === "nosupport"){ t = "No disponible"; c = "g-bad"; }
+    else if(gps.state === "denied"){ t = "Sin permiso"; c = "g-bad"; }
+    else if(gps.state === "searching"){ t = "Buscando…"; c = "g-warn"; }
+    else if(gps.state === "ok"){ t = "±" + Math.round(gps.acc) + " m"; c = "g-ok"; }
+    else if(gps.state === "weak"){ t = "Débil ±" + Math.round(gps.acc); c = "g-warn"; }
+    else { t = "Al empezar"; }
+    el.textContent = t; el.className = "sm " + c;
+  }
+  function gpsStart(){
+    if(!prefs.gps) return;
+    if(!("geolocation" in navigator)){ setGps("nosupport"); return; }
+    if(gps.watch !== null) return;
+    if(gps.state !== "ok" && gps.state !== "weak") setGps("searching");
+    try{
+      gps.watch = navigator.geolocation.watchPosition(onFix, onGpsErr, {enableHighAccuracy:true, maximumAge:0, timeout:30000});
+    }catch(e){ setGps("nosupport"); }
+  }
+  function gpsStop(){
+    if(gps.watch !== null){ try{ navigator.geolocation.clearWatch(gps.watch); }catch(e){} gps.watch = null; }
+    if(gps.state !== "denied" && gps.state !== "nosupport") setGps("idle");
+  }
+  function onGpsErr(err){
+    if(err && err.code === 1){ tipGps = true; updTip(); if(gps.watch !== null){ try{ navigator.geolocation.clearWatch(gps.watch); }catch(e){} gps.watch = null; } setGps("denied"); }
+    else if(gps.state !== "ok") setGps("searching");
+  }
+  function onFix(pos){
+    var c = pos.coords;
+    gps.acc = c.accuracy;
+    if(tipGps){ tipGps = false; updTip(); }
+    setGps(c.accuracy <= GPS_MAX_ACC ? "ok" : "weak");
+    if(!st.running || c.accuracy > GPS_MAX_ACC) return;
+    var e = elapsedMs(), loc = locate(e);
+    if(loc.done) return;
+    var now = Date.now();
+    var p = [+c.latitude.toFixed(6), +c.longitude.toFixed(6), PACE_KEYS.indexOf(steps[loc.idx].pace), track.seg,
+             Math.round((now - st.walkStart)/1000), Math.round(e/1000), 0];
+    var last = track.pts[track.pts.length - 1];
+    if(last && last[3] === p[3]){
+      var d = hav(last, p), dt = Math.max(1, p[4] - last[4]);
+      if(d < GPS_MIN_STEP) return;
+      if(d/dt > GPS_MAX_SPEED) return;
+      track.dist += d;
+    }
+    p[6] = Math.round(track.dist);
+    track.pts.push(p);
+    saveSessionSoon();
+    render();
+  }
+  // p = [lat, lon, ritmo(0/1/2), tramo-GPS, seg desde inicio (reloj), seg activos, distancia acumulada]
+  function currentPace(){
+    var n = track.pts.length; if(n < 2) return NaN;
+    var L = track.pts[n-1], activeNow = Math.round(elapsedMs()/1000);
+    if(activeNow - L[5] > 25) return NaN;
+    for(var i = n - 2; i >= 0; i--){
+      var P = track.pts[i];
+      if(P[3] !== L[3]) break;
+      if(L[5] - P[5] >= 30){
+        var dd = L[6] - P[6]; if(dd < 20) return NaN;
+        return (L[5] - P[5]) / (dd/1000);
+      }
+    }
+    return NaN;
+  }
+
+  /* ---------- Sesión en curso (por si el móvil cierra la app) ---------- */
+  var saveTimer = null;
+  function saveSession(){
+    saveTimer = null;
+    if(st.finished || (st.accum === 0 && !st.running)){ store.del("caminata.session.v2"); return; }
+    store.set("caminata.session.v2", {planIdx:planIdx, plan:plans[planIdx], st:st, track:track, saved:Date.now()});
+  }
+  function saveSessionSoon(){ if(!saveTimer) saveTimer = setTimeout(saveSession, 8000); }
+  function restoreSession(){
+    var s = store.get("caminata.session.v2", null);
+    if(!s || !s.st || Date.now() - s.saved > 4*3600*1000) { store.del("caminata.session.v2"); return false; }
+    if(s.planIdx >= 0 && s.planIdx < plans.length && JSON.stringify(plans[s.planIdx]) === JSON.stringify(s.plan)) planIdx = s.planIdx;
+    else { store.del("caminata.session.v2"); return false; }
+    rebuild();
+    st = Object.assign(newState(), s.st);
+    track = Object.assign(newTrack(), s.track);
+    return true;
+  }
 
   /* ---------- Control ---------- */
   function start(){
     initAudio();
-    if(st.finished) resetTimer();
+    if(st.finished) resetTimer(true);
     if(!steps.length) return;
     var fresh = st.accum === 0;
+    if(fresh){ track = newTrack(); st.walkStart = Date.now(); st.recorded = false; }
+    else track.seg++;
     st.running = true; st.startedAt = Date.now();
     var loc = locate(st.accum);
     st.lastIdx = loc.idx;
     if(fresh) announce(0, true);
     else { changeBeep(steps[loc.idx].pace); say("Seguimos. " + steps[loc.idx].name + "."); }
-    lockScreen();
+    lockScreen(); gpsStart(); saveSession();
     render();
   }
   function pause(){
     st.accum = elapsedMs(); st.running = false;
-    unlockScreen();
+    unlockScreen(); gpsStop();
     try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(e){}
-    render();
+    saveSession(); render();
   }
-  function resetTimer(){
-    st = newState(); unlockScreen();
-    try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(e){}
+  function resetTimer(silent){
+    var e = elapsedMs()/1000;
+    if(!silent && !st.recorded && e >= 60) finishWalk(false);
+    st = newState(); track = newTrack(); unlockScreen(); gpsStop();
+    try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(e2){}
+    store.del("caminata.session.v2");
   }
   function skip(){
     var loc = locate(elapsedMs());
@@ -345,13 +512,18 @@
       if(!st.finished){
         var wasActive = st.lastIdx !== -1 || st.running;
         st.finished = true; st.running = false; st.accum = total * 1000;
-        unlockScreen();
-        if(wasActive){ finishBeep(); vibrate([300,100,300,100,600]); setTimeout(function(){ say("Entrenamiento terminado. ¡Buen trabajo!"); }, 900); }
+        unlockScreen(); gpsStop();
+        if(wasActive){
+          finishBeep(); vibrate([300,100,300,100,600]);
+          setTimeout(function(){ say("Entrenamiento terminado. ¡Buen trabajo!"); }, 900);
+          finishWalk(true);
+        }
+        store.del("caminata.session.v2");
       }
       render(loc); return;
     }
     if(st.running){
-      if(loc.idx !== st.lastIdx){ st.lastIdx = loc.idx; announce(loc.idx); }
+      if(loc.idx !== st.lastIdx){ st.lastIdx = loc.idx; announce(loc.idx); saveSessionSoon(); }
       var secLeft = Math.ceil(loc.left - 1e-6);
       if(secLeft >= 1 && secLeft <= 3){
         var key = loc.idx + "-" + secLeft;
@@ -359,6 +531,43 @@
       }
     }
     render(loc);
+  }
+
+  /* ---------- Registro de la caminata ---------- */
+  function paceBreakdown(activeSec){
+    var out = {suave:{t:0,d:0}, moderado:{t:0,d:0}, rapido:{t:0,d:0}}, cum = 0;
+    steps.forEach(function(s){
+      var t = Math.max(0, Math.min(s.sec, activeSec - cum)); out[s.pace].t += t; cum += s.sec;
+    });
+    for(var i = 1; i < track.pts.length; i++){
+      var a = track.pts[i-1], b = track.pts[i];
+      if(a[3] !== b[3]) continue;
+      out[PACE_KEYS[b[2]]].d += b[6] - a[6];
+    }
+    return out;
+  }
+  function thin(pts){
+    var out = [], last = null;
+    pts.forEach(function(p, i){
+      if(!last || i === pts.length - 1 || p[3] !== last[3] || p[2] !== last[2] || hav(last, p) >= 12){ out.push(p.slice(0, 5)); last = p; }
+    });
+    return out;
+  }
+  function finishWalk(complete){
+    if(st.recorded) return;
+    var active = Math.min(total, Math.round(elapsedMs()/1000));
+    if(active < 60) return;
+    st.recorded = true;
+    var rec = {
+      id: st.walkStart || Date.now(), date: st.walkStart || Date.now(), plan: plans[planIdx].name,
+      complete: complete, dur: active, dist: Math.round(track.dist),
+      by: paceBreakdown(active), pts: thin(track.pts)
+    };
+    history.unshift(rec);
+    if(history.length > 60) history.length = 60;
+    while(!store.set("caminata.history.v1", history) && history.length > 1){ history.pop(); }
+    renderHistory();
+    setTimeout(function(){ showSummary(rec); }, complete ? 1500 : 0);
   }
 
   /* ---------- Pintado ---------- */
@@ -405,6 +614,8 @@
     $("elapsed").textContent = fmt(Math.floor(shownE));
     $("remaining").textContent = fmt(Math.ceil(total - shownE - 1e-6));
     $("total").textContent = fmt(total);
+    $("dist").textContent = km(track.dist);
+    $("curPace").textContent = st.running ? paceStr(currentPace()) : "–:–";
 
     var sb = $("startBtn");
     sb.textContent = st.running ? "Pausa" : (st.finished ? "Otra vez" : (e > 0 ? "Seguir" : "Empezar"));
@@ -435,11 +646,176 @@
       b.innerHTML = esc(p.name) + "<small>" + mins + "′</small>";
       b.addEventListener("click", function(){
         if(st.running) return;
-        planIdx = i; save(); resetTimer(); rebuild(); buildTimeline(); renderPlans(); renderEditor(); render();
+        resetTimer(); planIdx = i; save(); rebuild(); buildTimeline(); renderPlans(); renderEditor(); render();
       });
       box.appendChild(b);
     });
   }
+
+  /* ---------- Resumen ---------- */
+  var DAYS = ["dom","lun","mar","mié","jue","vie","sáb"], MONTHS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  function fdate(ts){ var d = new Date(ts); return DAYS[d.getDay()] + " " + d.getDate() + " " + MONTHS[d.getMonth()] + ", " + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
+  function routeSvg(pts){
+    if(!pts || pts.length < 2) return '<div class="empty">Sin recorrido GPS en esta caminata.</div>';
+    var la0 = pts[0][0], lo0 = pts[0][1], kx = Math.cos(la0*Math.PI/180)*111320, ky = 110540;
+    var xy = pts.map(function(p){ return [(p[1]-lo0)*kx, -(p[0]-la0)*ky]; });
+    var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    xy.forEach(function(q){ minX = Math.min(minX,q[0]); maxX = Math.max(maxX,q[0]); minY = Math.min(minY,q[1]); maxY = Math.max(maxY,q[1]); });
+    var W = 320, H = 240, pad = 16, w = Math.max(maxX-minX, 20), h = Math.max(maxY-minY, 20);
+    var sc = Math.min((W-2*pad)/w, (H-2*pad)/h), ox = (W - w*sc)/2 - minX*sc, oy = (H - h*sc)/2 - minY*sc;
+    function P(i){ return (xy[i][0]*sc+ox).toFixed(1) + "," + (xy[i][1]*sc+oy).toFixed(1); }
+    var out = "", run = null;
+    for(var i = 1; i < pts.length; i++){
+      if(pts[i][3] !== pts[i-1][3]){ if(run){ out += run.s + '" stroke="' + run.c + '"/>'; run = null; } continue; }
+      var col = COLORS[PACE_KEYS[pts[i][2]]];
+      if(!run || run.c !== col){ if(run) out += run.s + '" stroke="' + run.c + '"/>'; run = {c:col, s:'<polyline points="' + P(i-1)}; }
+      run.s += " " + P(i);
+    }
+    if(run) out += run.s + '" stroke="' + run.c + '"/>';
+    var scaleM = niceScale(110/sc);
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Recorrido"><g fill="none" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">' + out + '</g>' +
+      '<circle cx="' + P(0).split(",")[0] + '" cy="' + P(0).split(",")[1] + '" r="6" fill="#fff" stroke="#2B353B" stroke-width="2.5"/>' +
+      '<circle cx="' + P(pts.length-1).split(",")[0] + '" cy="' + P(pts.length-1).split(",")[1] + '" r="6" fill="#2B353B"/>' +
+      '<g transform="translate(14,' + (H-14) + ')"><line x1="0" y1="0" x2="' + (scaleM*sc).toFixed(1) + '" y2="0" stroke="#6B767C" stroke-width="2"/><text x="0" y="-6" font-size="11" fill="#6B767C">' + (scaleM >= 1000 ? (scaleM/1000) + " km" : scaleM + " m") + '</text></g></svg>';
+  }
+  function niceScale(m){ var c = [10,20,50,100,200,250,500,1000,2000,5000]; for(var i = c.length-1; i >= 0; i--) if(c[i] <= m) return c[i]; return 10; }
+  function mapsUrl(pts){
+    var o = pts[0], d = pts[pts.length-1], wp = [], n = Math.min(8, pts.length - 2);
+    for(var i = 1; i <= n; i++){ var p = pts[Math.round(i*(pts.length-1)/(n+1))]; wp.push(p[0] + "," + p[1]); }
+    return "https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=" + o[0] + "," + o[1] + "&destination=" + d[0] + "," + d[1] + (wp.length ? "&waypoints=" + encodeURIComponent(wp.join("|")) : "");
+  }
+  function gpx(rec){
+    var name = "Caminata " + rec.plan + " " + fdate(rec.date);
+    var s = '<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Cronometro de caminata" xmlns="http://www.topografix.com/GPX/1/1">\n<metadata><name>' + esc(name) + '</name><time>' + new Date(rec.date).toISOString() + '</time></metadata>\n<trk><name>' + esc(name) + '</name><type>walking</type>\n';
+    var seg = null;
+    rec.pts.forEach(function(p){
+      if(p[3] !== seg){ if(seg !== null) s += "</trkseg>\n"; s += "<trkseg>\n"; seg = p[3]; }
+      s += '<trkpt lat="' + p[0] + '" lon="' + p[1] + '"><time>' + new Date(rec.date + p[4]*1000).toISOString() + '</time></trkpt>\n';
+    });
+    if(seg !== null) s += "</trkseg>\n";
+    return s + "</trk>\n</gpx>\n";
+  }
+  function shareGpx(rec){
+    var d = new Date(rec.date);
+    var fname = "caminata-" + d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0") + ".gpx";
+    var text = gpx(rec);
+    try{
+      var file = new File([text], fname, {type:"application/gpx+xml"});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file], title:fname}).catch(function(){});
+        return;
+      }
+    }catch(e){}
+    try{
+      var url = URL.createObjectURL(new Blob([text], {type:"application/gpx+xml"}));
+      var a = document.createElement("a"); a.href = url; a.download = fname; document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 2000);
+    }catch(e){}
+  }
+  var leafletP = null;
+  function loadLeaflet(){
+    if(window.L) return Promise.resolve();
+    if(leafletP) return leafletP;
+    function load(tag, attrs){
+      return new Promise(function(res, rej){
+        var el = document.createElement(tag);
+        Object.keys(attrs).forEach(function(k){ el[k] = attrs[k]; });
+        el.onload = function(){ res(); }; el.onerror = function(){ el.remove(); rej(); };
+        document.head.appendChild(el);
+      });
+    }
+    leafletP = Promise.all([
+      load("link", {rel:"stylesheet", href:"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"}),
+      load("script", {src:"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"})
+    ]).catch(function(e){ leafletP = null; throw e; });
+    return leafletP;
+  }
+  var mapObj = null;
+  function showMap(rec, btn){
+    btn.textContent = "Cargando mapa…"; btn.disabled = true;
+    loadLeaflet().then(function(){
+      var div = $("map"); div.style.display = "block";
+      $("routeSvg").style.display = "none";
+      if(mapObj){ mapObj.remove(); mapObj = null; }
+      mapObj = L.map(div, {zoomControl:true, attributionControl:true});
+      mapObj.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(mapObj);
+      var all = [], run = null;
+      for(var i = 1; i < rec.pts.length; i++){
+        var a = rec.pts[i-1], b = rec.pts[i];
+        if(a[3] !== b[3]){ run = null; continue; }
+        var col = COLORS[PACE_KEYS[b[2]]];
+        if(!run || run.c !== col){ run = {c:col, ll:[[a[0],a[1]]]}; run.line = L.polyline(run.ll, {color:col, weight:5}).addTo(mapObj); }
+        run.ll.push([b[0], b[1]]); run.line.setLatLngs(run.ll);
+        all.push([b[0], b[1]]);
+      }
+      all.unshift([rec.pts[0][0], rec.pts[0][1]]);
+      mapObj.invalidateSize();
+      mapObj.fitBounds(all, {padding:[24,24], maxZoom:18});
+      L.circleMarker(all[0], {radius:6, color:"#2B353B", weight:2.5, fillColor:"#fff", fillOpacity:1}).addTo(mapObj);
+      L.circleMarker(all[all.length-1], {radius:6, color:"#2B353B", weight:2, fillColor:"#2B353B", fillOpacity:1}).addTo(mapObj);
+      btn.textContent = "Ver dibujo sin mapa"; btn.disabled = false;
+      btn.onclick = function(){ div.style.display = "none"; $("routeSvg").style.display = "block"; btn.textContent = "Ver sobre el mapa"; btn.onclick = function(){ showMap(rec, btn); }; };
+    }).catch(function(){
+      btn.textContent = "Sin conexión para el mapa"; btn.disabled = false;
+      setTimeout(function(){ btn.textContent = "Ver sobre el mapa"; }, 2500);
+    });
+  }
+  function showSummary(rec, fromHistory){
+    var avg = rec.dist > 30 ? rec.dur / (rec.dist/1000) : NaN;
+    var h = '<div class="sheet-head"><div><h2>Resumen' + (rec.complete ? "" : '<span class="badge">Incompleta</span>') + '</h2><p>' + esc(rec.plan) + " · " + fdate(rec.date) + '</p></div><button class="x" id="sumClose" aria-label="Cerrar">✕</button></div>';
+    h += '<div class="totals"><div class="tot"><small>Tiempo</small><b>' + fmt(rec.dur) + '</b></div><div class="tot"><small>Distancia</small><b>' + km(rec.dist) + '</b><span class="unit">km</span></div><div class="tot"><small>Ritmo medio</small><b>' + paceStr(avg) + '</b><span class="unit">/km</span></div></div>';
+    h += '<div class="route"><div id="routeSvg">' + routeSvg(rec.pts) + '</div><div id="map"></div></div>';
+    h += '<table class="pt"><tr><th>Ritmo</th><th>Tiempo</th><th>Distancia</th><th>min/km</th></tr>';
+    PACE_KEYS.forEach(function(k){
+      var b = rec.by[k]; if(!b || b.t === 0) return;
+      h += '<tr><td><span class="sw" style="background:' + COLORS[k] + '"></span>' + PACE[k] + '</td><td>' + fmt(b.t) + '</td><td>' + km(b.d) + ' km</td><td>' + (b.d > 30 ? paceStr(b.t/(b.d/1000)) : "–:–") + '</td></tr>';
+    });
+    h += '</table>';
+    var hasRoute = rec.pts && rec.pts.length >= 2;
+    h += '<div class="actions">';
+    if(hasRoute){
+      h += '<button class="small" id="sumMap">Ver sobre el mapa</button>';
+      h += '<a class="small" id="sumGmaps" href="' + esc(mapsUrl(rec.pts)) + '" target="_blank" rel="noopener">Abrir en Google Maps</a>';
+      h += '<button class="small wide" id="sumGpx">Guardar o compartir GPX</button>';
+    }
+    if(fromHistory) h += '<button class="small wide" id="sumDel" style="color:#B23B22">Borrar del historial</button>';
+    h += '<button class="small wide" id="sumOk">Cerrar</button></div>';
+    if(hasRoute) h += '<p class="note" style="margin-top:12px">El mapa y Google Maps necesitan conexión. Google Maps traza un camino aproximado por calles pasando por puntos de tu ruta; el archivo GPX guarda el recorrido exacto (se abre en Wikiloc, Strava, Google Earth o Google My Maps).</p>';
+    $("summaryInner").innerHTML = h;
+    $("summarySheet").hidden = false;
+    $("summarySheet").scrollTop = 0;
+    function close(){ $("summarySheet").hidden = true; if(mapObj){ mapObj.remove(); mapObj = null; } }
+    $("sumClose").onclick = close; $("sumOk").onclick = close;
+    if(hasRoute){
+      $("sumMap").onclick = function(){ showMap(rec, this); };
+      $("sumGpx").onclick = function(){ shareGpx(rec); };
+    }
+    if(fromHistory){
+      var delBtn = $("sumDel"), armed = false;
+      delBtn.onclick = function(){
+        if(!armed){ armed = true; delBtn.textContent = "Pulsa otra vez para borrar"; setTimeout(function(){ armed = false; delBtn.textContent = "Borrar del historial"; }, 3000); return; }
+        history = history.filter(function(r){ return r.id !== rec.id; });
+        store.set("caminata.history.v1", history); renderHistory(); close();
+      };
+    }
+  }
+
+  function renderHistory(){
+    var body = $("historyBody");
+    if(!history.length){ body.innerHTML = '<p class="note">Aún no hay caminatas guardadas. Se guardan solas al terminar un plan (o al reiniciar después de más de un minuto).</p>'; return; }
+    var weekAgo = Date.now() - 7*24*3600*1000, wk = 0, wt = 0, wn = 0;
+    history.forEach(function(r){ if(r.date >= weekAgo){ wk += r.dist; wt += r.dur; wn++; } });
+    var h = '<p class="hist-sum">Últimos 7 días: <b>' + wn + '</b> caminata' + (wn === 1 ? "" : "s") + ' · <b>' + km(wk) + ' km</b> · <b>' + fmt(wt) + '</b></p>';
+    history.forEach(function(r, i){
+      h += '<button class="hrow" data-i="' + i + '"><span><span>' + esc(r.plan) + (r.complete ? "" : ' <span class="badge">Incompleta</span>') + '</span><br><span class="d">' + fdate(r.date) + " · " + fmt(r.dur) + '</span></span><span class="k">' + km(r.dist) + ' km</span></button>';
+    });
+    body.innerHTML = h;
+  }
+  $("historyBody").addEventListener("click", function(ev){
+    var b = ev.target.closest(".hrow"); if(!b) return;
+    showSummary(history[+b.dataset.i], true);
+  });
 
   /* ---------- Editor ---------- */
   function mmss(prefix, sec){
@@ -461,7 +837,7 @@
         h += '<div class="blk ' + b.pace + '" data-i="' + i + '"><div class="blk-head"><b>Tramo</b>' + acts + '</div><div class="blk-grid">' +
           '<label class="field grow">Nombre<input type="text" data-f="name" value="' + esc(b.name) + '"></label>' +
           '<label class="field">Ritmo<select data-f="pace">' +
-            ["suave","moderado","rapido"].map(function(k){ return '<option value="' + k + '"' + (b.pace === k ? " selected" : "") + '>' + PACE[k] + '</option>'; }).join("") +
+            PACE_KEYS.map(function(k){ return '<option value="' + k + '"' + (b.pace === k ? " selected" : "") + '>' + PACE[k] + '</option>'; }).join("") +
           '</select></label>' +
           '<label class="field">Duración' + mmss("", b.sec) + '</label></div></div>';
       }
@@ -521,23 +897,34 @@
   $("resetBtn").addEventListener("click", function(){ resetTimer(); render(); });
   $("testBtn").addEventListener("click", function(){
     initAudio(); changeBeep("rapido"); vibrate([400,120,400]);
-    var keep = prefs.voice; say("Serie 1 de 6. Rápido, 2 minutos.");
-    if(!keep && !prefs.sound) setTip("Tienes pitidos y voz desactivados.");
+    say("Serie 1 de 6. Rápido, 2 minutos.");
   });
-  [["tSound","sound"],["tVoice","voice"],["tVibe","vibrate"]].forEach(function(pr){
+  [["tSound","sound"],["tVoice","voice"],["tVibe","vibrate"],["tGps","gps"]].forEach(function(pr){
     var el = $(pr[0]); el.checked = !!prefs[pr[1]];
     el.addEventListener("change", function(){
       prefs[pr[1]] = el.checked; save();
       if(pr[1] === "sound" && el.checked){ initAudio(); tickBeep(); }
       if(pr[1] === "voice" && el.checked) say("Voz activada.");
       if(pr[1] === "vibrate" && el.checked) vibrate(200);
+      if(pr[1] === "gps"){
+        if(el.checked){ setGps("idle"); if(st.running){ track.seg++; gpsStart(); } }
+        else { gpsStop(); tipGps = false; updTip(); }
+        renderGps();
+      }
     });
   });
   document.addEventListener("visibilitychange", function(){
-    if(document.visibilityState === "visible"){ tick(); if(st.running) lockScreen(); }
+    if(document.visibilityState === "visible"){
+      tick();
+      if(st.running){ lockScreen(); if(gps.watch === null) gpsStart(); }
+    } else { saveSession(); }
   });
+  window.addEventListener("pagehide", saveSession);
 
-  rebuild(); buildTimeline(); renderPlans(); renderEditor(); render();
+  rebuild();
+  var restored = restoreSession();
+  buildTimeline(); renderPlans(); renderEditor(); renderHistory(); renderGps(); render();
+  if(restored && st.running){ gpsStart(); lockScreen(); }
   setInterval(tick, 200);
   if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
     window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
