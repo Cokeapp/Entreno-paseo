@@ -97,6 +97,23 @@
   .row-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
   .small{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;font-size:15px;font-weight:600;cursor:pointer;color:var(--ink)}
   .disabled-ed{opacity:.5;pointer-events:none}
+  .picker{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;text-align:left;
+    background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:12px;cursor:pointer;color:var(--ink);font:inherit}
+  .picker:disabled{opacity:.6;cursor:default}
+  .picker small{display:block;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .picker b{display:block;font-size:19px;margin:1px 0}
+  .picker .pk-d{display:block;font-size:13px;color:var(--muted)}
+  .picker .pk-r{flex:0 0 auto;font-weight:700;color:var(--moderado);font-size:15px}
+  .pcard{display:block;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);
+    border-radius:16px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+  .pcard.active{border-color:var(--ink);box-shadow:0 0 0 1.5px var(--ink) inset}
+  .pcard .pc-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .pcard b{font-size:18px} .pcard .pc-min{font-weight:700;font-variant-numeric:tabular-nums}
+  .pcard .pc-d{font-size:13px;color:var(--muted);margin-top:3px}
+  .pcard .timeline{height:10px;margin:8px 0 2px}
+  .pcard .hoy{font-size:12px;font-weight:700;background:var(--ink);color:#fff;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+  .ed-top{background:#F1EDE3;border-radius:12px;padding:10px;margin-bottom:12px}
+  .ed-top select{font-size:16px;padding:8px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink);width:100%}
   dl{margin:0;font-size:15px} dt{font-weight:700;margin-top:8px} dd{margin:2px 0 0;color:var(--muted)}
 
   /* Historial */
@@ -135,7 +152,10 @@
 <body>
 <main>
   <h1>Cronómetro de caminata</h1>
-  <div class="plans" id="plans"></div>
+  <button class="picker" id="pickerBtn" aria-haspopup="dialog">
+    <span><small>Caminata de hoy</small><b id="pickName"></b><span class="pk-d" id="pickDesc"></span></span>
+    <span class="pk-r">Cambiar ▾</span>
+  </button>
 
   <section class="stage" id="stage" aria-live="polite">
     <div class="top"><div class="pace" id="pace">Listo</div><div class="series" id="series"></div></div>
@@ -180,7 +200,7 @@
   </details>
 
   <details id="editor">
-    <summary>Editar plan</summary>
+    <summary>Editar tipos de caminata</summary>
     <div class="dbody" id="editorBody"></div>
   </details>
 
@@ -199,8 +219,12 @@
       <p class="note" style="margin-top:8px">Los avisos y la voz suenan también con el móvil bloqueado o con otra app delante: la app los reproduce como si fuera música, y en la pantalla de bloqueo verás el tramo actual con los botones de pausa y saltar. Si estabas escuchando música en otra app, se pausará al empezar. La vibración solo funciona con la app en pantalla.</p>
     </div>
   </details>
-  <p class="note" style="text-align:center;margin-top:14px">Versión 3</p>
+  <p class="note" style="text-align:center;margin-top:14px">Versión 4</p>
 </main>
+
+<section class="sheet" id="planSheet" hidden role="dialog" aria-label="Elegir caminata">
+  <div class="inner" id="planInner"></div>
+</section>
 
 <section class="sheet" id="summarySheet" hidden>
   <div class="inner" id="summaryInner"></div>
@@ -248,6 +272,8 @@
 
   var plans = store.get("caminata.plans.v1", null);
   if(!Array.isArray(plans) || !plans.length) plans = clone(DEFAULTS);
+  // los tipos que vienen de fábrica se pueden restaurar; los creados por ti, no
+  plans.forEach(function(p, i){ if(p.def === undefined && !p.custom && i < DEFAULTS.length) p.def = i; });
   var prefs = Object.assign({sound:true, voice:true, vibrate:true, gps:true}, store.get("caminata.prefs.v1", {}));
   var planIdx = Math.min(Math.max(0, store.get("caminata.planIdx", 0) | 0), plans.length - 1);
   var history = store.get("caminata.history.v1", []);
@@ -651,7 +677,7 @@
   function restoreSession(){
     var s = store.get("caminata.session.v2", null);
     if(!s || !s.st || Date.now() - s.saved > 4*3600*1000) { store.del("caminata.session.v2"); return false; }
-    if(s.planIdx >= 0 && s.planIdx < plans.length && JSON.stringify(plans[s.planIdx]) === JSON.stringify(s.plan)) planIdx = s.planIdx;
+    if(s.planIdx >= 0 && s.planIdx < plans.length && JSON.stringify(plans[s.planIdx].blocks) === JSON.stringify(s.plan.blocks)) planIdx = s.planIdx;
     else { store.del("caminata.session.v2"); return false; }
     rebuild();
     st = Object.assign(newState(), s.st);
@@ -831,25 +857,69 @@
       }
       lastSegIdx = curIdx;
     }
-    var chips = $("plans").querySelectorAll(".chip");
-    for(var c = 0; c < chips.length; c++) chips[c].disabled = st.running;
+    $("pickerBtn").disabled = st.running;
     $("editorBody").classList.toggle("disabled-ed", st.running);
   }
 
-  function renderPlans(){
-    var box = $("plans"); box.innerHTML = "";
-    plans.forEach(function(p, i){
-      var b = document.createElement("button");
-      b.className = "chip" + (i === planIdx ? " active" : "");
-      var mins = Math.round(expand(p).reduce(function(a,s){ return a + s.sec; }, 0) / 60);
-      b.innerHTML = esc(p.name) + "<small>" + mins + "′</small>";
-      b.addEventListener("click", function(){
-        if(st.running) return;
-        resetTimer(); planIdx = i; save(); rebuild(); buildTimeline(); renderPlans(); renderEditor(); render();
-      });
-      box.appendChild(b);
-    });
+  function planSec(p){ return expand(p).reduce(function(a,x){ return a + x.sec; }, 0); }
+  function mins(sec){ var m = Math.floor(sec/60), x = sec % 60; return x ? m + "′" + (x < 10 ? "0" : "") + x + "″" : m + "′"; }
+  function planDesc(p){
+    var SH = {suave:"suave", moderado:"moderado", rapido:"rápido"};
+    return p.blocks.map(function(b){
+      if(b.type === "series") return b.reps + " × (" + mins(b.fastSec) + " rápido + " + mins(b.recSec) + " mod.)";
+      return b.sec > 0 ? mins(b.sec) + " " + SH[b.pace] : "";
+    }).filter(Boolean).join(" · ") || "Sin tramos";
   }
+  function miniTimeline(p){
+    return '<div class="timeline">' + expand(p).map(function(x){ return '<div class="seg ' + x.pace + '" style="flex:' + x.sec + ' 1 0"></div>'; }).join("") + '</div>';
+  }
+  function selectPlan(i){
+    if(st.running || i < 0 || i >= plans.length) return;
+    if(i !== planIdx) resetTimer();
+    planIdx = i; save(); rebuild(); buildTimeline(); renderPlans(); renderEditor(); render();
+  }
+  function renderPlans(){
+    var p = plans[planIdx];
+    $("pickName").textContent = p.name + " · " + Math.round(planSec(p) / 60) + "′";
+    $("pickDesc").textContent = planDesc(p);
+    if(!$("planSheet").hidden) renderPlanSheet();
+  }
+  function renderPlanSheet(){
+    var h = '<div class="sheet-head"><div><h2>¿Qué caminata toca hoy?</h2><p>Toca una para elegirla.</p></div><button class="x" data-pm="close" aria-label="Cerrar">✕</button></div>';
+    plans.forEach(function(p, i){
+      h += '<button class="pcard' + (i === planIdx ? " active" : "") + '" data-pick="' + i + '"><div class="pc-top"><b>' + esc(p.name) +
+        (i === planIdx ? '<span class="hoy">Elegida</span>' : '') + '</b><span class="pc-min">' + Math.round(planSec(p) / 60) + '′</span></div>' +
+        miniTimeline(p) + '<div class="pc-d">' + esc(planDesc(p)) + '</div></button>';
+    });
+    h += '<div class="actions"><button class="small wide" data-pm="new">+ Crear un tipo nuevo</button>' +
+         '<button class="small wide" data-pm="edit">Editar tipos de caminata</button></div>';
+    $("planInner").innerHTML = h;
+  }
+  function openPlanSheet(){ if(st.running) return; renderPlanSheet(); $("planSheet").hidden = false; $("planSheet").scrollTop = 0; }
+  function closePlanSheet(){ $("planSheet").hidden = true; }
+  function openEditor(focusName){
+    var ed = $("editor"); ed.open = true;
+    setTimeout(function(){
+      ed.scrollIntoView({behavior:"smooth", block:"start"});
+      if(focusName){ var n = ed.querySelector('[data-plan="name"]'); if(n){ n.focus(); try{ n.select(); }catch(e){} } }
+    }, 60);
+  }
+  function newPlan(){
+    plans.push({name:"Nuevo tipo", custom:true, blocks:[
+      {type:"tramo", name:"Calentamiento", pace:"suave", sec:300},
+      {type:"tramo", name:"Caminata continua", pace:"moderado", sec:1200},
+      {type:"tramo", name:"Vuelta a la calma", pace:"suave", sec:300}]});
+    selectPlan(plans.length - 1);
+  }
+  $("pickerBtn").addEventListener("click", openPlanSheet);
+  $("planInner").addEventListener("click", function(ev){
+    var t = ev.target.closest("[data-pick],[data-pm]"); if(!t) return;
+    if(t.dataset.pick !== undefined){ selectPlan(+t.dataset.pick); closePlanSheet(); window.scrollTo({top:0, behavior:"smooth"}); return; }
+    var a = t.dataset.pm;
+    if(a === "close") closePlanSheet();
+    if(a === "new"){ newPlan(); closePlanSheet(); openEditor(true); }
+    if(a === "edit"){ closePlanSheet(); openEditor(false); }
+  });
 
   /* ---------- Resumen ---------- */
   var DAYS = ["dom","lun","mar","mié","jue","vie","sáb"], MONTHS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
@@ -1023,8 +1093,15 @@
   }
   function renderEditor(){
     var p = plans[planIdx], body = $("editorBody");
-    var h = '<p class="note">Ajusta los minutos a los del plan. Los cambios se guardan en este móvil y reinician el cronómetro.</p>';
-    h += '<label class="field" style="margin-bottom:10px">Nombre del plan<input type="text" data-plan="name" value="' + esc(p.name) + '"></label>';
+    var h = '<div class="ed-top"><label class="field">Tipo que estás editando<select id="edPick">' +
+      plans.map(function(q, i){ return '<option value="' + i + '"' + (i === planIdx ? " selected" : "") + '>' + esc(q.name) + ' · ' + Math.round(planSec(q) / 60) + '′</option>'; }).join("") +
+      '</select></label><div class="row-btns">' +
+      '<button class="small" data-pa="new">+ Nuevo tipo</button><button class="small" data-pa="dup">Duplicar</button>' +
+      (planIdx > 0 ? '<button class="small" data-pa="up">↑ Subir en la lista</button>' : '') +
+      (plans.length > 1 ? '<button class="small" data-pa="del" style="color:#B23B22">Borrar este tipo</button>' : '') +
+      '</div></div>';
+    h += '<p class="note">Ajusta los minutos a tu gusto. Los cambios se guardan en este móvil y reinician el cronómetro. El tipo que editas queda elegido para hoy.</p>';
+    h += '<label class="field" style="margin-bottom:10px">Nombre<input type="text" data-plan="name" value="' + esc(p.name) + '"></label>';
     p.blocks.forEach(function(b, i){
       var acts = '<span><button class="act" data-act="up" data-i="' + i + '" aria-label="Subir">↑</button><button class="act" data-act="down" data-i="' + i + '" aria-label="Bajar">↓</button><button class="act" data-act="del" data-i="' + i + '" aria-label="Quitar">✕</button></span>';
       if(b.type === "series"){
@@ -1042,7 +1119,9 @@
       }
     });
     h += '<div class="row-btns"><button class="small" data-add="tramo">+ Tramo</button><button class="small" data-add="series">+ Series</button>' +
-         '<button class="small" data-add="restore">Restaurar este plan</button></div>';
+         (p.def !== undefined && DEFAULTS[p.def] ? '<button class="small" data-add="restore">Restaurar como venía</button>' : '') + '</div>';
+    var missing = DEFAULTS.filter(function(d, i){ return !plans.some(function(q){ return q.def === i; }); });
+    if(missing.length) h += '<div class="row-btns" style="margin-top:14px"><button class="small" data-pa="defaults">Recuperar los tipos que venían de serie (' + missing.map(function(d){ return esc(d.name); }).join(", ") + ')</button></div>';
     body.innerHTML = h;
   }
   function commit(structural){
@@ -1052,7 +1131,12 @@
   }
   $("editorBody").addEventListener("change", function(ev){
     var el = ev.target, p = plans[planIdx];
-    if(el.dataset.plan === "name"){ p.name = el.value.trim() || "Plan"; commit(false); return; }
+    if(el.id === "edPick"){ selectPlan(+el.value); return; }
+    if(el.dataset.plan === "name"){
+      p.name = el.value.trim() || "Sin nombre"; commit(false);
+      var op = $("edPick") && $("edPick").options[planIdx]; if(op) op.textContent = p.name + " · " + Math.round(planSec(p) / 60) + "′";
+      return;
+    }
     var blkEl = el.closest(".blk"); if(!blkEl) return;
     var b = p.blocks[+blkEl.dataset.i], f = el.dataset.f;
     var num = Math.max(0, parseInt(el.value, 10) || 0);
@@ -1073,6 +1157,31 @@
   });
   $("editorBody").addEventListener("click", function(ev){
     var t = ev.target, p = plans[planIdx];
+    if(t.dataset.pa){
+      var pa = t.dataset.pa;
+      if(pa === "new"){ newPlan(); openEditor(true); }
+      if(pa === "dup"){
+        var c = clone(p); delete c.def; c.custom = true; c.name = p.name + " (copia)";
+        plans.splice(planIdx + 1, 0, c); selectPlan(planIdx + 1); openEditor(true);
+      }
+      if(pa === "up" && planIdx > 0){
+        plans.splice(planIdx - 1, 0, plans.splice(planIdx, 1)[0]); planIdx--; save(); renderPlans(); renderEditor();
+      }
+      if(pa === "del" && plans.length > 1){
+        if(t.dataset.armed !== "1"){
+          t.dataset.armed = "1"; t.textContent = "Pulsa otra vez para borrar «" + p.name + "»";
+          setTimeout(function(){ if(t.isConnected){ t.dataset.armed = ""; t.textContent = "Borrar este tipo"; } }, 3500);
+          return;
+        }
+        resetTimer(); plans.splice(planIdx, 1); planIdx = Math.min(planIdx, plans.length - 1);
+        save(); rebuild(); buildTimeline(); renderPlans(); renderEditor(); render();
+      }
+      if(pa === "defaults"){
+        DEFAULTS.forEach(function(d, i){ if(!plans.some(function(q){ return q.def === i; })){ var c2 = clone(d); c2.def = i; plans.push(c2); } });
+        save(); renderPlans(); renderEditor();
+      }
+      return;
+    }
     if(t.dataset.act){
       var i = +t.dataset.i;
       if(t.dataset.act === "del") p.blocks.splice(i, 1);
@@ -1083,8 +1192,8 @@
       if(t.dataset.add === "tramo") p.blocks.push({type:"tramo", name:"Caminata", pace:"moderado", sec:300});
       if(t.dataset.add === "series") p.blocks.push({type:"series", reps:4, fastSec:120, recSec:120});
       if(t.dataset.add === "restore"){
-        var def = DEFAULTS[planIdx] || DEFAULTS[0];
-        plans[planIdx] = clone(def);
+        var def = clone(DEFAULTS[p.def] || DEFAULTS[0]); def.def = p.def;
+        plans[planIdx] = def;
       }
       commit(true);
     }
